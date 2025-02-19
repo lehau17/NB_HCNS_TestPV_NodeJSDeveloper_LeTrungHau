@@ -4,9 +4,14 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { hashSync, compareSync } from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { users } from '@prisma/client';
+import { UserResponseDto } from './dto/login.response.dto';
+import { JsonWebTokenService } from 'src/jwt/jwt.service';
 @Injectable()
 export class EmployeeService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly jsonWebTokenService: JsonWebTokenService,
+  ) {}
 
   findByUsername(username: string): Promise<users> {
     return this.prismaService.users.findFirst({
@@ -14,7 +19,7 @@ export class EmployeeService {
     });
   }
 
-  async login(login: LoginDto) {
+  async login(login: LoginDto): Promise<UserResponseDto> {
     // find by Username
     const foundUser = await this.findByUsername(login.username);
     // if not found, throw exception
@@ -26,7 +31,17 @@ export class EmployeeService {
     if (!isPasswordMatch) {
       throw new BadRequestException();
     }
-    return foundUser;
+    const roles = ['USER'];
+    const tokens =
+      await this.jsonWebTokenService.signAccessTokenAndRefreshToken(
+        foundUser.id,
+        foundUser.username,
+        roles,
+      );
+    return {
+      info: foundUser,
+      tokens,
+    };
   }
 
   async createEmployee(payload: CreateEmployeeDto) {
