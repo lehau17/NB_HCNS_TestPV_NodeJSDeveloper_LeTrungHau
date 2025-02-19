@@ -3,9 +3,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { hashSync, compareSync } from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
-import { users } from '@prisma/client';
-import { UserResponseDto } from './dto/login.response.dto';
+import { Status, users } from '@prisma/client';
+import { LoginResponseDto } from './dto/login.response.dto';
 import { JsonWebTokenService } from 'src/jwt/jwt.service';
+import { mapperUserToUserResponse } from '@app/common/mapper/userMapper';
+import { MessageResponse } from '@app/common';
 @Injectable()
 export class EmployeeService {
   constructor(
@@ -19,17 +21,20 @@ export class EmployeeService {
     });
   }
 
-  async login(login: LoginDto): Promise<UserResponseDto> {
+  async login(login: LoginDto): Promise<LoginResponseDto> {
     // find by Username
     const foundUser = await this.findByUsername(login.username);
     // if not found, throw exception
     if (!foundUser) {
-      throw new BadRequestException();
+      throw new BadRequestException(MessageResponse.USER_NOT_FOUND);
+    }
+    if (foundUser.status === Status.deactive) {
+      throw new BadRequestException(MessageResponse.USER_DEACTIVATED);
     }
     // compare password
     const isPasswordMatch = compareSync(login.password, foundUser.password);
     if (!isPasswordMatch) {
-      throw new BadRequestException();
+      throw new BadRequestException(MessageResponse.USER_INVALID_PASSWORD);
     }
     const roles = ['USER'];
     const tokens =
@@ -39,7 +44,7 @@ export class EmployeeService {
         roles,
       );
     return {
-      info: foundUser,
+      info: mapperUserToUserResponse(foundUser),
       tokens,
     };
   }

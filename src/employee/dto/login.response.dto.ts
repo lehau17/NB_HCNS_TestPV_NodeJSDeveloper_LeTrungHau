@@ -1,7 +1,8 @@
+import { UserResponseDto } from '@app/common';
 import { users } from '@prisma/client';
 
-export interface UserResponseDto {
-  info: users;
+export interface LoginResponseDto {
+  info: UserResponseDto;
   tokens: {
     accessToken: string;
     refreshToken: string;

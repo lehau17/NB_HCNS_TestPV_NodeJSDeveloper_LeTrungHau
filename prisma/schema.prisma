@@ -25,7 +25,7 @@ model users {
   password      String
   avatar        String?  @default("")
   refresh_token String?  @default("")
-  status        Status?  @default(deactive)
+  status        Status?  @default(active)
   created_at    DateTime @default(now())
   updated_at    DateTime @default(now()) @updatedAt
 }
