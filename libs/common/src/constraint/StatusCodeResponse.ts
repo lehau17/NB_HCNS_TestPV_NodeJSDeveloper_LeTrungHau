@@ -9,6 +9,9 @@ export enum MessageResponse {
 
   // code common
   SUCCESS = 'Success',
+
+  // server error
+  SERVER_ERROR = 'Server error',
 }
 
 export const StatusCodeResponse: Record<string, number> = {
@@ -20,6 +23,8 @@ export const StatusCodeResponse: Record<string, number> = {
   [MessageResponse.USER_INVALID_PASSWORD]: 10003,
   [MessageResponse.USER_NOT_FOUND]: 10004,
   [MessageResponse.USER_DEACTIVATED]: 10005,
+  // server error begin 50000
+  [MessageResponse.SERVER_ERROR]: 50000,
 
   // common
   [MessageResponse.SUCCESS]: 9000,
