@@ -21,7 +21,6 @@ export class GlobalInterceptor implements NestInterceptor {
         context.getHandler(),
       ) || MessageResponse.SUCCESS;
     const code = StatusCodeResponse[message];
-    console.log(`📝 Message: ${message}`);
     return next.handle().pipe(
       map((data) => ({
         message,

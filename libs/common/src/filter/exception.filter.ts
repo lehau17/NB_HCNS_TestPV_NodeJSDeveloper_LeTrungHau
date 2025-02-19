@@ -18,6 +18,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let message = MessageResponse.SERVER_ERROR;
 
     if (exception instanceof HttpException) {
+      console.log('check exception: ' + exception, typeof exception);
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
       message =
@@ -27,6 +28,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     }
 
     response.status(status).json({
+      success: false,
       code: StatusCodeResponse[message],
       message,
       timestamp: new Date().toISOString(),

@@ -3,12 +3,15 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalInterceptor } from '@app/common/interceptor/Globa.interceptor';
+import { GlobalExceptionFilter } from '@app/common/filter/exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // use global interceptor
   app.useGlobalInterceptors(new GlobalInterceptor(new Reflector()));
+  // use global filter
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   // validation data global
   app.useGlobalPipes(
