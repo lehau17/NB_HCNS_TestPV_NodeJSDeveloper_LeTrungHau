@@ -5,7 +5,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { MessageResponse } from '@app/common';
 import { Paging, PagingBuilder } from '@app/common/types/paging';
 import { Prisma, roles, Status } from '@prisma/client';
-import { FindManyEmployeeDto } from 'src/employee/dto/findMany.dto';
 import { FindManyRoleDto } from './dto/find-many.dto';
 
 @Injectable()
@@ -97,13 +96,13 @@ export class RoleService {
     });
   }
 
-  async update(id: number, updateRoleDto: UpdateRoleDto) {
+  async update(id: number, { role, status }: UpdateRoleDto) {
     const foundRole = await this.findOne(id);
     if (!foundRole)
       throw new BadRequestException(MessageResponse.ROLE_NOT_EXIST);
     return this.prismaService.roles.update({
       where: { id },
-      data: { ...updateRoleDto },
+      data: { role, status: status ? 'active' : 'deactive' },
     });
   }
 

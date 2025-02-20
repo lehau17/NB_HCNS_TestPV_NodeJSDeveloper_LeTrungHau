@@ -20,6 +20,9 @@ export enum MessageResponse {
   // 6000
   ROLE_GET_LIST = 'Get list roles',
   GET_ROLE = 'Get role',
+  UPDATE_ROLE = 'Update role',
+  // 7000
+  TOO_MANY_REQUESTS = 'Too many requests',
 
   // 3000
   UNAUTHORIZE = 'Unauthorized',
@@ -65,6 +68,10 @@ export const StatusCodeResponse: Record<string, number> = {
   // role
   [MessageResponse.ROLE_GET_LIST]: 6000,
   [MessageResponse.GET_ROLE]: 6001,
+  [MessageResponse.UPDATE_ROLE]: 6002,
+
+  // 7000
+  [MessageResponse.TOO_MANY_REQUESTS]: 7000,
 
   // unauthorize
   [MessageResponse.UNAUTHORIZE]: 3000,

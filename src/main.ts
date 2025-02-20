@@ -8,12 +8,14 @@ import { AccessTokenGuard } from '@app/common/guard/accessToken.guard';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { RoleGuard } from '@app/common/guard/role.guard';
+import { GlobalRateLimiter } from '@app/common/guard/rateLimiter.global';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // use global guard
   app.useGlobalGuards(
+    new GlobalRateLimiter(new ConfigService()),
     new AccessTokenGuard(
       new JwtService(),
       new ConfigService(),

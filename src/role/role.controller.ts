@@ -53,16 +53,17 @@ export class RoleController {
   @ApiQuery({ name: 'orderType', required: false, enum: ['ASC', 'DESC'] })
   @ApiBearerAuth()
   @MessageDeco(MessageResponse.ROLE_GET_LIST)
+  @ApiOperation({ summary: 'Lấy danh sách role' })
   findAll(@Query() paging: FindManyRoleDto) {
     return this.roleService.findMany(paging);
   }
 
   @ApiOperation({ summary: 'Lấy role theo id cho role ADMIN' })
-  @MessageDeco(MessageResponse.CHANGE_PASSWORD_SUCCESS)
+  @MessageDeco(MessageResponse.GET_ROLE)
   @ApiParam({
     name: 'id',
     type: 'number',
-    description: 'ID của nhân viên cần cập nhật',
+    description: 'ID của role',
   })
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -70,11 +71,26 @@ export class RoleController {
   }
 
   @Patch(':id')
+  @Role(['ADMIN'])
+  @ApiOperation({ summary: 'update role theo id cho role ADMIN' })
+  @MessageDeco(MessageResponse.UPDATE_ROLE)
+  @ApiParam({
+    name: 'id',
+    type: 'number',
+    description: 'ID của role',
+  })
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     return this.roleService.update(+id, updateRoleDto);
   }
 
   @Delete(':id')
+  @Role(['ADMIN'])
+  @ApiParam({
+    name: 'id',
+    type: 'number',
+    description: 'ID của role',
+  })
+  @ApiOperation({ summary: 'delete role theo id cho role ADMIN' })
   remove(@Param('id') id: string) {
     return this.roleService.softDelete(+id);
   }
