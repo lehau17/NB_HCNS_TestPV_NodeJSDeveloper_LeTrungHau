@@ -1,0 +1,161 @@
+# name: deploy
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Deploy to VPS
+#         uses: appleboy/ssh-action@v1.1.0
+#         with:
+#           host: ${{ secrets.VPS_HOST }}
+#           username: ${{ secrets.VPS_USER }}
+#           key: ${{ secrets.VPS_KEY }}
+#           script: |
+#             set -e
+
+#             if [ ! -d "/root/docker" ]; then
+#                 echo "Thư mục /root/docker không tồn tại. Tạo mới..."
+#                 mkdir -p /root/docker
+#             fi
+
+#             # Navigate to docker directory
+#             cd /root/docker
+
+#             # Check if the repo directory exists and is not empty
+#             if [ -d "spotify_micro_service" ] && [ "$(ls -A /root/docker/spotify_micro_service)" ]; then
+#                 echo "Repo đã tồn tại và có nội dung. Tiến hành xoá thư mục và clone lại..."
+#                 rm -rf /root/docker/spotify_micro_service
+#             fi
+
+#             echo "Tiến hành clone repo mới..."
+#             git clone https://github.com/lehau17/spotify_micro_service.git
+
+#             cd ./spotify_micro_service
+#             cd ./be_spotify_microservice
+
+#             # Write secrets to .env files
+#             echo "JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}" >> ./api-gateway/.env
+#             echo "JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}" >> ./api-gateway/.env
+#             echo "RATE_LIMIT_GLOBAL=${{ secrets.RATE_LIMIT_GLOBAL }}" >> ./api-gateway/.env
+#             echo "RATE_LIMIT_PUBLIC=${{ secrets.RATE_LIMIT_PUBLIC }}" >> ./api-gateway/.env
+#             echo "RATE_LIMIT_TTL=${{ secrets.RATE_LIMIT_TTL }}" >> ./api-gateway/.env
+#             echo "RATE_LIMIT_PRIVATE=${{ secrets.RATE_LIMIT_PRIVATE }}" >> ./api-gateway/.env
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./api-gateway/.env
+#             echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./api-gateway/.env
+#             echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./api-gateway/.env
+#             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> ./api-gateway/.env
+
+#             # user service
+#             echo "DATABASE_URL=${{ secrets.DATABASE_URL_USER_SERVICE }}" >> ./user-service/.env
+#             echo "ACCESS_TOKEN_KEY=${{ secrets.JWT_ACCESS_SECRET }}" >> ./user-service/.env
+#             echo "REFRESH_TOKEN_KEY=${{ secrets.JWT_REFRESH_SECRET }}" >> ./user-service/.env
+#             echo "URL_BACKEND=${{ secrets.URL_BACKEND }}" >> ./user-service/.env
+#             echo "VERIFY_TOKEN_KEY=${{ secrets.VERIFY_TOKEN_KEY }}" >> ./user-service/.env
+#             echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./user-service/.env
+#             echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./user-service/.env
+#             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> ./user-service/.env
+#             echo "REDIS_DB=${{ secrets.REDIS_DB }}" >> ./user-service/.env
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./user-service/.env
+
+#             # discuss-service
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./discuss-service/.env
+#             echo "DATABASE_URL=${{ secrets.DATABASE_URL_DISCUSS_SERVICE }}" >> ./discuss-service/.env
+
+#             # follow-service
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./following-service/.env
+#             echo "DATABASE_URL=${{ secrets.DATABASE_URL_FOLLOW_SERVICE }}" >> ./following-service/.env
+#             echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./following-service/.env
+#             echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./following-service/.env
+#             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> ./following-service/.env
+#             echo "REDIS_DB=${{ secrets.REDIS_DB }}" >> ./following-service/.env
+
+#             # genre-service
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./genre-service/.env
+#             echo "DATABASE_URL=${{ secrets.DATABASE_URL_GENRE_SERVICE }}" >> ./genre-service/.env
+
+#             # like-song-service
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./like-song-service/.env
+#             echo "DATABASE_URL=${{ secrets.DATABASE_URL_LIKE_SONG_SERVICE }}" >> ./like-song-service/.env
+#             echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./like-song-service/.env
+#             echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./like-song-service/.env
+#             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> ./like-song-service/.env
+#             echo "REDIS_DB=${{ secrets.REDIS_DB }}" >> ./like-song-service/.env
+
+#             # playlist_service
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./playlist_service/.env
+#             echo "DATABASE_URL=${{ secrets.DATABASE_URL_PLAYLIST_SERVICE }}" >> ./playlist_service/.env
+#             echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./playlist_service/.env
+#             echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./playlist_service/.env
+#             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> ./playlist_service/.env
+#             echo "REDIS_DB=${{ secrets.REDIS_DB }}" >> ./playlist_service/.env
+
+#             # recentSong-service
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./recentSong-service/.env
+#             echo "DATABASE_URL=${{ secrets.DATABASE_URL_RECENTSONG_SERVICE }}" >> ./recentSong-service/.env
+#             echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./recentSong-service/.env
+#             echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./recentSong-service/.env
+#             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> ./recentSong-service/.env
+#             echo "REDIS_DB=${{ secrets.REDIS_DB }}" >> ./recentSong-service/.env
+
+#             # song-service
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./song-service/.env
+#             echo "DATABASE_URL=${{ secrets.DATABASE_URL_SONG_SERVICE }}" >> ./song-service/.env
+#             echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./song-service/.env
+#             echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./song-service/.env
+#             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> ./song-service/.env
+#             echo "REDIS_DB=${{ secrets.REDIS_DB }}" >> ./song-service/.env
+
+#             # upload-service
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./upload-service/.env
+#             echo "AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}" >> ./upload-service/.env
+#             echo "AWS_S3_NAME=${{ secrets.AWS_S3_NAME }}" >> ./upload-service/.env
+#             echo "AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}" >> ./upload-service/.env
+#             echo "AWS_S3_REGION=${{ secrets.AWS_S3_REGION }}" >> ./upload-service/.env
+#             echo "AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}" >> ./upload-service/.env
+#             echo "CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}" >> ./upload-service/.env
+#             echo "CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}" >> ./upload-service/.env
+#             echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> ./upload-service/.env
+#             echo "CLOUDINARY_URL=${{ secrets.CLOUDINARY_URL }}" >> ./upload-service/.env
+
+#             # notity-service
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./notify-service/.env
+
+#             # list-friend-service
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./list-friend-service/.env
+#             echo "DATABASE_URL=${{ secrets.DATABASE_URL_LIST_FRIEND_SERVICE }}" >> ./list-friend-service/.env
+
+#             # search-service
+#             echo "RABBITMQ_URL=${{ secrets.RABBITMQ_URL }}" >> ./search-service/.env
+#             echo "ELASTIC_NODE=${{ secrets.ELASTIC_NODE }}" >> ./search-service/.env
+#             echo "ELASTIC_USER=${{ secrets.ELASTIC_USER }}" >> ./search-service/.env
+#             echo "ELASTIC_PASS=${{ secrets.ELASTIC_PASS }}" >> ./search-service/.env
+
+#             cd ..
+
+#             # Docker commands
+#             echo "Dừng các container đang chạy..."
+#             docker-compose down || echo "Không có container nào đang chạy."
+
+#             echo "Build lại các container..."
+#             docker-compose build || echo "Không có container nào để build lại"
+
+#             echo "Khởi chạy các container..."
+#             docker-compose up -d
+
+#             # Dọn dẹp các hình ảnh Docker không cần thiết
+#             echo "Dọn dẹp các hình ảnh Docker không dùng..."
+#             dangling_images=$(docker images -f "dangling=true" -q)
+#             if [ -n "$dangling_images" ]; then
+#                 echo "$dangling_images" | xargs docker rmi || echo "Không thể xóa các hình ảnh."
+#             else
+#                 echo "Không có hình ảnh Docker nào cần dọn dẹp."
+#             fi
+
+#             echo "Quá trình triển khai hoàn tất!"
