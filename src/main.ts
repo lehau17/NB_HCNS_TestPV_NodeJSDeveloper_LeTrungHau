@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { RoleGuard } from '@app/common/guard/role.guard';
 import { GlobalRateLimiter } from '@app/common/guard/rateLimiter.global';
+import { BlackListGuard } from '@app/common/guard/blacklist.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +22,7 @@ async function bootstrap() {
       new ConfigService(),
       new Reflector(),
     ),
+    new BlackListGuard(new Reflector()),
     new RoleGuard(new Reflector()),
   );
 

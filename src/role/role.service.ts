@@ -11,7 +11,7 @@ import { FindManyRoleDto } from './dto/find-many.dto';
 export class RoleService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createRoleDto: CreateRoleDto) {
+  async create(createRoleDto: CreateRoleDto): Promise<roles> {
     // check unique
 
     const foundRole = await this.prismaService.roles.findFirst({
@@ -86,17 +86,17 @@ export class RoleService {
       .build();
   }
 
-  findByName(name: string) {
+  findByName(name: string): Promise<roles> {
     return this.prismaService.roles.findFirst({ where: { role: name } });
   }
 
-  findOne(id: number) {
+  findOne(id: number): Promise<roles> {
     return this.prismaService.roles.findFirst({
       where: { id },
     });
   }
 
-  async update(id: number, { role, status }: UpdateRoleDto) {
+  async update(id: number, { role, status }: UpdateRoleDto): Promise<roles> {
     const foundRole = await this.findOne(id);
     if (!foundRole)
       throw new BadRequestException(MessageResponse.ROLE_NOT_EXIST);
@@ -106,7 +106,7 @@ export class RoleService {
     });
   }
 
-  async softDelete(id: number) {
+  async softDelete(id: number): Promise<roles> {
     const foundRole = await this.findOne(id);
     if (!foundRole)
       throw new BadRequestException(MessageResponse.ROLE_NOT_EXIST);

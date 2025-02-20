@@ -7,13 +7,19 @@ import { compareSync } from 'bcrypt';
 import { Status } from '@prisma/client';
 import { JsonWebTokenService } from 'src/jwt/jwt.service';
 import { mapperUserToUserResponse } from '@app/common/mapper/userMapper';
-import { MessageResponse, TokenPayload, TokenType } from '@app/common';
+import {
+  MessageResponse,
+  TokenFactory,
+  TokenPayload,
+  TokenType,
+} from '@app/common';
 import { LoginResponseDto } from 'src/employee/dto/login.response.dto';
 import { EmployeeService } from 'src/employee/employee.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { TokenPayloadCreateDto } from 'src/jwt/payloadCreate.dto';
 import { ChangePasswordDto } from 'src/employee/dto/change-password.dto';
+import { decode } from 'punycode';
 @Injectable()
 export class AuthService {
   constructor(
@@ -74,10 +80,11 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException(MessageResponse.USER_NOT_FOUND);
     }
-    const newPayloadRefreshToken: TokenPayload = {
-      ...decoded,
-      iat: new Date().getTime(),
-    };
+    const newPayloadRefreshToken: TokenPayload = TokenFactory.createAccessToken(
+      decoded.id,
+      decoded.username,
+      decoded.roles,
+    );
     const newPayloadAccessToken: TokenPayloadCreateDto = {
       username: decoded.username,
       roles: decoded.roles,

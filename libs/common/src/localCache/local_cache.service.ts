@@ -20,15 +20,15 @@ export class LocalCacheService {
     return this.cache.get<T>(key);
   }
 
-  async set<T>(key: string, value: T, ttl?: number) {
+  async set<T>(key: string, value: T, ttl?: number): Promise<void> {
     await this.cache.set(key, value, ttl || 10 * 1000);
   }
 
-  async del(key: string) {
+  async del(key: string): Promise<void> {
     await this.cache.del(key);
   }
 
-  async getTTl(key: string) {
+  async getTTl(key: string): Promise<number> {
     return await this.cache.ttl(key);
   }
 }
