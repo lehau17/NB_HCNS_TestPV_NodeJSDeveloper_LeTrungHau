@@ -22,7 +22,7 @@ jobs:
 
             if [ ! -d "/ubuntu/docker" ]; then
                 echo "Thư mục /ubuntu/docker không tồn tại. Tạo mới..."
-                mkdir -p /ubuntu/docker
+                mkdir /ubuntu/docker
             fi
 
             # Navigate to docker directory
