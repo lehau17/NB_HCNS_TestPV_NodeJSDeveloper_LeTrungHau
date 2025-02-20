@@ -25,7 +25,10 @@ jobs:
             # Check if the repo directory exists and is not empty
             if [ -d "NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau" ]; then
                 echo "Repo đã tồn tại và có nội dung. Tiến hành xoá thư mục và clone lại..."
-                rm -rf NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau
+                cd NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau
+                docker-compose down || echo "Pass"
+                cd ..
+                sudo rm -rf NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau
             fi
 
             echo "Tiến hành clone repo mới..."
