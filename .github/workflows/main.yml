@@ -34,18 +34,20 @@ jobs:
             cd ./NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau
 
             # Write secrets to .env files
-            echo "JWT_ACCESS_TOKEN_EXPIRES=${{ secrets.JWT_ACCESS_TOKEN_EXPIRES }}" >> ./.env
-            echo "JWT_ACCESS_TOKEN_SECRET=${{ secrets.JWT_ACCESS_TOKEN_SECRET }}" >> ./.env
-            echo "JWT_REFRESH_TOKEN_EXPIRES=${{ secrets.JWT_REFRESH_TOKEN_EXPIRES }}" >> ./.env
-            echo "JWT_REFRESH_TOKEN_SECRET=${{ secrets.JWT_REFRESH_TOKEN_SECRET }}" >> ./.env
-            echo "LIMITGLOBAL=${{ secrets.LIMITGLOBAL }}" >> ./.env
-            echo "VPS_HOST=${{ secrets.VPS_HOST }}" >> ./.env
-            echo "VPS_KEY=${{ secrets.VPS_KEY }}" >> ./.env
-            echo "VPS_USER=${{ secrets.VPS_USER }}" >> ./.env
+            echo 'JWT_ACCESS_TOKEN_EXPIRES=${{ secrets.JWT_ACCESS_TOKEN_EXPIRES }}' >> ./.env
+            echo 'JWT_ACCESS_TOKEN_SECRET=${{ secrets.JWT_ACCESS_TOKEN_SECRET }}' >> ./.env
+            echo 'JWT_REFRESH_TOKEN_EXPIRES=${{ secrets.JWT_REFRESH_TOKEN_EXPIRES }}' >> ./.env
+            echo 'JWT_REFRESH_TOKEN_SECRET=${{ secrets.JWT_REFRESH_TOKEN_SECRET }}' >> ./.env
+            echo 'LIMITGLOBAL=${{ secrets.LIMITGLOBAL }}' >> ./.env
+            echo 'VPS_HOST=${{ secrets.VPS_HOST }}' >> ./.env
+            echo 'VPS_KEY=${{ secrets.VPS_KEY }}' >> ./.env
+            echo 'VPS_USER=${{ secrets.VPS_USER }}' >> ./.env
 
 
             # Docker commands
             echo "Dừng các container đang chạy..."
+
+            sudo chmod 666 /var/run/docker.sock
             docker-compose down || echo "Không có container nào đang chạy."
 
             echo "Build lại các container..."
