@@ -1,19 +1,20 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Prisma, Status, users } from '@prisma/client';
+
 import { CreateEmployeeDto } from './dto/create-employee.dto';
-import { hashSync, compareSync } from 'bcrypt';
-import { LoginDto } from './dto/login.dto';
-import { Status, users } from '@prisma/client';
-import { LoginResponseDto } from './dto/login.response.dto';
-import { JsonWebTokenService } from 'src/jwt/jwt.service';
-import { mapperUserToUserResponse } from '@app/common/mapper/userMapper';
-import { MessageResponse } from '@app/common';
+import { hashSync } from 'bcrypt';
+import { FindManyEmployeeDto } from './dto/findMany.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import {
+  mapperUserToUserResponse,
+  MessageResponse,
+  UserResponseDto,
+} from '@app/common';
+import { Paging, PagingBuilder } from '@app/common/types/paging';
 @Injectable()
 export class EmployeeService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly jsonWebTokenService: JsonWebTokenService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   findByUsername(username: string): Promise<users> {
     return this.prismaService.users.findFirst({
@@ -21,47 +22,93 @@ export class EmployeeService {
     });
   }
 
-  async login(login: LoginDto): Promise<LoginResponseDto> {
-    // find by Username
-    const foundUser = await this.findByUsername(login.username);
-    // if not found, throw exception
-    if (!foundUser) {
-      throw new BadRequestException(MessageResponse.USER_NOT_FOUND);
-    }
-    if (foundUser.status === Status.deactive) {
-      throw new BadRequestException(MessageResponse.USER_DEACTIVATED);
-    }
-    // compare password
-    const isPasswordMatch = compareSync(login.password, foundUser.password);
-    if (!isPasswordMatch) {
-      throw new BadRequestException(MessageResponse.USER_INVALID_PASSWORD);
-    }
-    const roles = ['USER'];
-    const tokens =
-      await this.jsonWebTokenService.signAccessTokenAndRefreshToken(
-        foundUser.id,
-        foundUser.username,
-        roles,
-      );
-    return {
-      info: mapperUserToUserResponse(foundUser),
-      tokens,
-    };
-  }
-
-  async createEmployee(payload: CreateEmployeeDto) {
-    // check username
-    const existingEmployee = await this.findByUsername(payload.username);
-    // if not found, throw exception
-    if (existingEmployee) {
-      throw new BadRequestException();
-    }
-    // create user
+  create(data: CreateEmployeeDto) {
     return this.prismaService.users.create({
       data: {
-        ...payload,
-        password: hashSync(payload.password, 10),
+        ...data,
+        password: hashSync(data.password, 10),
       },
+    });
+  }
+
+  async findOne(id: number): Promise<UserResponseDto | null> {
+    const foundUser = await this.prismaService.users.findFirst({
+      where: { id },
+    });
+    return foundUser ? mapperUserToUserResponse(foundUser) : null;
+  }
+
+  async findMany({
+    limit = 20,
+    page = 1,
+    cursor,
+    isActive,
+    fullname = '',
+    orderBy = 'id',
+    orderType = 'DESC',
+  }: FindManyEmployeeDto): Promise<Paging<UserResponseDto>> {
+    limit = Number(limit);
+    page = Number(page);
+    cursor = Number(cursor);
+    let status: Status = Status.deactive;
+    if (isActive) {
+      if (isActive === true) {
+        status = Status.active;
+      } else {
+        status = Status.deactive;
+      }
+    } else {
+      status = undefined;
+    }
+    const options: Prisma.usersFindManyArgs = {
+      take: limit,
+      skip: cursor ? 1 : (page - 1) * limit,
+      where: {
+        id: cursor ? { gt: cursor } : undefined,
+        status: status,
+        fullname: {
+          contains: fullname,
+        },
+      },
+      orderBy: [
+        {
+          [orderBy]: orderType.toLowerCase(),
+        },
+      ],
+    };
+
+    const [foundUser, total] = await Promise.all([
+      this.prismaService.users.findMany(options),
+      this.prismaService.users.count({
+        where: {
+          status,
+          fullname: {
+            contains: fullname,
+          },
+        },
+      }),
+    ]);
+
+    return new PagingBuilder<UserResponseDto>()
+      .setLimit(limit)
+      .setPage(page)
+      .setTotal(total)
+      .setData(foundUser)
+      .setNextPage(total / page <= limit ? null : page + 1)
+      .setPrevPage(page === 1 ? null : page - 1)
+      .build();
+  }
+
+  // update(id: number, payload: UpdateEmployeeDto) {}
+
+  async softDelete(id: number) {
+    const foundUser = await this.findOne(id);
+    if (!foundUser || foundUser.status === 'deactive') {
+      throw new BadRequestException(MessageResponse.USER_NOT_FOUND);
+    }
+    return this.prismaService.users.update({
+      where: { id },
+      data: { status: Status.deactive },
     });
   }
 }

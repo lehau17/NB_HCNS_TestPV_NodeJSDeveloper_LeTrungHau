@@ -41,6 +41,41 @@ export class JsonWebTokenService {
     });
   }
 
+  verifyAccessToken(token: string): boolean {
+    try {
+      this.jwtService.verify(token, {
+        secret: this.accessTokenKey,
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async verifyRefreshToken(token: string): Promise<TokenPayload | null> {
+    try {
+      const payload = await this.jwtService.verifyAsync<TokenPayload>(token, {
+        secret: this.refreshTokenKey,
+      });
+      return payload;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async signTokenFullPayload(payload: TokenPayload): Promise<string> {
+    return this.jwtService.signAsync(payload, {
+      secret:
+        payload.typeToken === TokenType.ACCESS_TOKEN
+          ? this.accessTokenKey
+          : this.refreshTokenKey,
+    });
+  }
+
+  decodeAccessToken(token: string): TokenPayload {
+    return this.jwtService.decode(token) as TokenPayload;
+  }
+
   async signAccessTokenAndRefreshToken(
     id: number,
     username: string,
@@ -48,13 +83,13 @@ export class JsonWebTokenService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const accessTokenPayload: TokenPayloadCreateDto = {
       id,
-      email: username,
+      username: username,
       roles,
       typeToken: TokenType.ACCESS_TOKEN,
     };
     const refreshTokenPayload: TokenPayloadCreateDto = {
       id,
-      email: username,
+      username: username,
       roles,
       typeToken: TokenType.REFRESH_TOKEN,
     };

@@ -11,6 +11,7 @@ import { MessageResponse, StatusCodeResponse } from '../constraint';
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
+    console.log('check exception', exception);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
@@ -18,7 +19,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let message = MessageResponse.SERVER_ERROR;
 
     if (exception instanceof HttpException) {
-      console.log('check exception: ' + exception, typeof exception);
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
       message =

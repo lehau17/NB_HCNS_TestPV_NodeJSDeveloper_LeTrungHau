@@ -4,9 +4,21 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalInterceptor } from '@app/common/interceptor/Globa.interceptor';
 import { GlobalExceptionFilter } from '@app/common/filter/exception.filter';
+import { AccessTokenGuard } from '@app/common/guard/accessToken.guard';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // use global guard
+  app.useGlobalGuards(
+    new AccessTokenGuard(
+      new JwtService(),
+      new ConfigService(),
+      new Reflector(),
+    ),
+  );
 
   // use global interceptor
   app.useGlobalInterceptors(new GlobalInterceptor(new Reflector()));

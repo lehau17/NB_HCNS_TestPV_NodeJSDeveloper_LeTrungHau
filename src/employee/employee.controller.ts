@@ -1,27 +1,43 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { Controller, Get, Query } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
-import { ApiTags } from '@nestjs/swagger';
-import { LoginDto } from './dto/login.dto';
-import { MessageDeco } from '@app/common/decorator';
-import { MessageResponse } from '@app/common/constraint';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { FindManyEmployeeDto } from './dto/findMany.dto';
+import {
+  MessageDeco,
+  MessageResponse,
+  PublicApi,
+  TokenPayload,
+  User,
+} from '@app/common';
 
 @Controller('employees')
 @ApiTags('employees')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
-  @Post('/register')
-  @MessageDeco(MessageResponse.USER_CREATED)
-  @HttpCode(HttpStatus.CREATED)
-  create(@Body() body: CreateEmployeeDto) {
-    return this.employeeService.createEmployee(body);
+  @Get()
+  @PublicApi()
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'cursor', required: false, type: Number })
+  @ApiQuery({ name: 'fullname', required: false, type: String })
+  @ApiQuery({ name: 'isActive', required: false, type: Boolean })
+  @ApiQuery({
+    name: 'orderBy',
+    required: false,
+    default: 'id',
+    enum: ['fullname', 'created_at', 'updated_at', 'id'],
+  })
+  @ApiQuery({ name: 'orderType', required: false, enum: ['ASC', 'DESC'] })
+  @MessageDeco(MessageResponse.USER_FIND_MANY)
+  findMany(@Query() query: FindManyEmployeeDto) {
+    return this.employeeService.findMany(query);
   }
 
-  @Post('login')
-  @MessageDeco(MessageResponse.USER_LOGIN_SUCCESS)
-  @HttpCode(HttpStatus.OK)
-  login(@Body() body: LoginDto) {
-    return this.employeeService.login(body);
+  @Get('/me')
+  @ApiBearerAuth()
+  @MessageDeco(MessageResponse.USER_INFO)
+  getMe(@User() { id }: TokenPayload) {
+    return this.employeeService.findOne(id);
   }
 }

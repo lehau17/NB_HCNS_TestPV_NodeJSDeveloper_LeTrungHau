@@ -1,35 +1,35 @@
 services:
   postgres:
-    image: postgres:latest
-    container_name: postgres-quan-ly-nhan-su
-    volumes:
+    image: postgres:latest # docker hub
+    container_name: postgres-quan-ly-nhan-su # ten container
+    volumes: # backup du lieu
       - ./data/data_db:/var/lib/postgresql/data
-    restart: always
-    environment:
+    restart: always # khi ma loi tu dong chay lai, khi tat may mo lai
+    environment: # bien moi truong
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin1234
       POSTGRES_DB: quan_ly_nhan_su
     ports:
       - '5432:5432'
-    networks:
+    networks: # mang chung
       - node-networks
-    healthcheck:
+    healthcheck: # kiem tra trang thai
       test: ['CMD-SHELL', 'pg_isready -U admin -d quan_ly_nhan_su']
       interval: 10s
       retries: 5
       start_period: 10s
 
-  # backend:
-  #   container_name: quan-ly-nhan-su-backend
-  #   build: ./
-  #   ports:
-  #     - '8080:8080'
-  #   networks:
-  #     - node-networks
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
+  backend:
+    container_name: quan-ly-nhan-su-backend
+    build: ./
+    ports:
+      - '8080:8080'
+    networks:
+      - node-networks
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 networks:
   node-networks:
-    driver: bridge
+    driver: bridge # host

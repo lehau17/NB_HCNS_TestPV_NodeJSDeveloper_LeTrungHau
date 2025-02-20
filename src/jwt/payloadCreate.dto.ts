@@ -2,7 +2,7 @@ import { TokenType } from '@app/common';
 
 export interface TokenPayloadCreateDto {
   id: number;
-  email: string;
+  username: string;
   roles: string[];
   typeToken: TokenType;
 }
