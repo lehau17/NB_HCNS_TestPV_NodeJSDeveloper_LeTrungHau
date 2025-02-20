@@ -3,7 +3,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { compareSync } from 'bcrypt';
 import { Status } from '@prisma/client';
 import { JsonWebTokenService } from 'src/jwt/jwt.service';
@@ -14,6 +13,7 @@ import { EmployeeService } from 'src/employee/employee.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { TokenPayloadCreateDto } from 'src/jwt/payloadCreate.dto';
+import { ChangePasswordDto } from 'src/employee/dto/change-password.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -36,7 +36,7 @@ export class AuthService {
     if (!isPasswordMatch) {
       throw new BadRequestException(MessageResponse.USER_INVALID_PASSWORD);
     }
-    const roles = ['USER'];
+    const roles = [foundUser.role.role];
     const tokens =
       await this.jsonWebTokenService.signAccessTokenAndRefreshToken(
         foundUser.id,
@@ -59,7 +59,7 @@ export class AuthService {
       throw new BadRequestException(MessageResponse.USER_EXISTED);
     }
     // create user
-    return this.createEmployee(payload);
+    return this.employeeService.create(payload);
   }
 
   async refreshToken(
@@ -92,5 +92,9 @@ export class AuthService {
       accessToken,
       refreshToken: newRefreshToken,
     };
+  }
+
+  async changePassword(id: number, body: ChangePasswordDto) {
+    return this.employeeService.changePassword(id, body);
   }
 }

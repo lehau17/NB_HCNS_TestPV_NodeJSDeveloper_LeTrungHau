@@ -3,7 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, Status, users } from '@prisma/client';
 
 import { CreateEmployeeDto } from './dto/create-employee.dto';
-import { hashSync } from 'bcrypt';
+import { compareSync, hashSync } from 'bcrypt';
 import { FindManyEmployeeDto } from './dto/findMany.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import {
@@ -12,21 +12,35 @@ import {
   UserResponseDto,
 } from '@app/common';
 import { Paging, PagingBuilder } from '@app/common/types/paging';
+import { RoleService } from 'src/role/role.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
 @Injectable()
 export class EmployeeService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly roleService: RoleService,
+  ) {}
 
-  findByUsername(username: string): Promise<users> {
+  findByUsername(username: string) {
     return this.prismaService.users.findFirst({
       where: { username },
+      include: {
+        role: true,
+      },
     });
   }
 
-  create(data: CreateEmployeeDto) {
+  async create(data: CreateEmployeeDto) {
+    const role = await this.roleService.findByName('USER');
     return this.prismaService.users.create({
       data: {
         ...data,
         password: hashSync(data.password, 10),
+        role: {
+          connect: {
+            id: role.id,
+          },
+        },
       },
     });
   }
@@ -64,7 +78,7 @@ export class EmployeeService {
       take: limit,
       skip: cursor ? 1 : (page - 1) * limit,
       where: {
-        id: cursor ? { gt: cursor } : undefined,
+        id: cursor ? { gte: cursor } : undefined,
         status: status,
         fullname: {
           contains: fullname,
@@ -109,6 +123,59 @@ export class EmployeeService {
     return this.prismaService.users.update({
       where: { id },
       data: { status: Status.deactive },
+    });
+  }
+
+  async updateEmployee(
+    id: number,
+    data: UpdateEmployeeDto,
+  ): Promise<UserResponseDto> {
+    //check user
+    const foundUser = await this.findOne(id);
+    if (!foundUser || foundUser.status === 'deactive') {
+      throw new BadRequestException(MessageResponse.USER_NOT_FOUND);
+    }
+    // update user
+    const userUpdated = await this.prismaService.users.update({
+      where: {
+        id,
+      },
+      data: {
+        ...data,
+      },
+    });
+    return mapperUserToUserResponse(userUpdated);
+  }
+
+  async changePassword(
+    id: number,
+    { oldPassword, newPassword, confirmNewPassword }: ChangePasswordDto,
+  ) {
+    // check exist
+    const foundUser = await this.prismaService.users.findFirst({
+      where: {
+        id,
+      },
+    });
+    if (!foundUser || foundUser.status === 'deactive') {
+      throw new BadRequestException(MessageResponse.USER_NOT_FOUND);
+    }
+    if (newPassword !== confirmNewPassword) {
+      throw new BadRequestException(
+        MessageResponse.PASSWORD_AND_CONFIRM_PASSWORD_NOT_MATCH,
+      );
+    }
+    if (!compareSync(oldPassword, foundUser.password)) {
+      throw new BadRequestException(MessageResponse.OLD_PASSWORD_NOT_VALID);
+    }
+    if (compareSync(newPassword, foundUser.password)) {
+      throw new BadRequestException(MessageResponse.NOT_INPUT_OLD_PASSWORD);
+    }
+    return this.prismaService.users.update({
+      where: { id },
+      data: {
+        password: hashSync(newPassword, 10),
+      },
     });
   }
 }

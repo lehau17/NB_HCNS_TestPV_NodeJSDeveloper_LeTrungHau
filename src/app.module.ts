@@ -5,6 +5,7 @@ import { JsonWebTokenModule } from './jwt/jwt.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
     ConfigModule.forRoot({ isGlobal: true }),
     JsonWebTokenModule,
     AuthModule,
+    RoleModule,
   ],
 })
 export class AppModule {}

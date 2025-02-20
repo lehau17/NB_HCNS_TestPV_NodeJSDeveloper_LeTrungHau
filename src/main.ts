@@ -7,6 +7,7 @@ import { GlobalExceptionFilter } from '@app/common/filter/exception.filter';
 import { AccessTokenGuard } from '@app/common/guard/accessToken.guard';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { RoleGuard } from '@app/common/guard/role.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,7 @@ async function bootstrap() {
       new ConfigService(),
       new Reflector(),
     ),
+    new RoleGuard(new Reflector()),
   );
 
   // use global interceptor

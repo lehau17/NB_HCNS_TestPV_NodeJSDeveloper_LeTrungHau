@@ -4,6 +4,7 @@ services:
     container_name: postgres-quan-ly-nhan-su # ten container
     volumes: # backup du lieu
       - ./data/data_db:/var/lib/postgresql/data
+      - ./data/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/
     restart: always # khi ma loi tu dong chay lai, khi tat may mo lai
     environment: # bien moi truong
       POSTGRES_USER: admin

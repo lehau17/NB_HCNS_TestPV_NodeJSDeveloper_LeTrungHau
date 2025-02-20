@@ -14,7 +14,6 @@ import { MessageResponse, StatusCodeResponse } from '../constraint';
 export class GlobalInterceptor implements NestInterceptor {
   constructor(private readonly reflector: Reflector) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    console.log(`👉 [${new Date().toISOString()}] Request received...`);
     const message =
       this.reflector.get<MessageResponse>(
         MESSAGE_DECORATOR,
