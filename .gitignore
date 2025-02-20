@@ -14,7 +14,7 @@ lerna-debug.log*
 
 
 #
-/data/data_db/*
+/data/*
 
 # OS
 .DS_Store
