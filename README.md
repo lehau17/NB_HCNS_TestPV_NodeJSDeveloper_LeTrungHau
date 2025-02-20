@@ -1,99 +1,63 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Bài test Backend NodeJS : Lê Trung Hậu
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ yarn install
+# Link deploy dự án :
+```javascript     
+http://testbackend.haudev.io.vn/swagger
 ```
+- Backend : Nodejs(NestJS)
+- Database : PostgreSQL
+- Caching : localCache
+- Security : accessToken, refreshToken, RateLimiter, BlackList
+- Ops : Ec2, docker-compose, github actions
 
-## Compile and run the project
+# Cấu trúc dự án
+![Cấu trúc dư án](moTaDuAn/cauTrucDuAn.png)
+- libs : 1 module dùng để khai báo các hàm, biến được chia sẻ với nhau trong source code
+- src : nơi tập trung các module chính
+- data : volumn của docker
+- prisma : lưu file .prisma của ORM prisma
+- .github : chứa file cấu hình github action
 
-```bash
-# development
-$ yarn run start
+# Mô tả API :
+## Login : /auth/login
+- Thành công :  ![Login thành công](moTaDuAn/login_success.png)
+- Sai Tên tài khoản : ![Login sai tên tài khoản](moTaDuAn/login_sai_tk.png)
 
-# watch mode
-$ yarn run start:dev
+- Sai mật khẩu : ![Login sai mật khẩu](moTaDuAn/login_sai_mk.png)
 
-# production mode
-$ yarn run start:prod
-```
+## register : /auth/register
 
-## Run tests
+- Thành công : ![Register thành công](moTaDuAn/register_success.png)
+- Trùng Tên tài khoản : ![Register trùng tên tài khoản](moTaDuAn/register_trung_tk.png)
 
-```bash
-# unit tests
-$ yarn run test
 
-# e2e tests
-$ yarn run test:e2e
+## refresh token : /auth/refresh_token truyền vào header 'x-refresh-token'
+ - Thành công : ![refresh token](moTaDuAn/refresh_token_success.png)
+ - Truyền sai : ![refresh token](moTaDuAn/refresh_token_fail.png)
 
-# test coverage
-$ yarn run test:cov
-```
 
-## Deployment
+## Change password : /auth/change_password
+ - Thành công :![change password](moTaDuAn/change_password_success.png)
+ - Sai mật khẩu gốc : ![change password](moTaDuAn/change_password_fail_old.png)
+ - new Password và config password khác nhau : ![change password](moTaDuAn/change_password_confirm_fail.png)
+ - Mật khẩu mới và mật khẩu cũ giống nhau : ![change password](moTaDuAn/change_password_old_and_new_password.png)
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Lấy danh sách user : /employees chỉ có quyền admin mới được xem danh sách user 
+- Không có quyền : ![không có quyền](moTaDuAn/get_employee_forbidden.png)
+- Lấy danh sách : [danh-sachs](moTaDuAn/get_employee.png)
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Lấy thông tin info của chính mình
+- Thành công : ![thông tin](moTaDuAn/get_me.png)
 
-```bash
-$ yarn install -g mau
-$ mau deploy
-```
+## Update thông tin bản thân /patch : employee/me
+- Thành công : ![thông tin](moTaDuAn/update_me.png)
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## deactive tài khoản bản thân /delete : employee/me
+- thành công : ![thông tin](moTaDuAn/deactivate_me.png)
+- Không tìm thấy : khi deactive thì id của tài khoản vừa deactive sẽ được thêm vào blacklist với ttl bằng thời gian sống bằng token : ![thông tin](moTaDuAn/deactive_not_found.png)
 
-## Resources
 
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Cập nhật thông tin user khi có quyền ADMIN
+-- không có quyền ![thông tin](moTaDuAn/forbidden_update_em.png)
+-- không tìm thấy user  ![thông tin](moTaDuAn/notfound_update_em.png)
+-- update thành công ![thông tin](moTaDuAn/success_update_em.png)

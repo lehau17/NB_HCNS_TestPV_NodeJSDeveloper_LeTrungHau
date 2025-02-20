@@ -14,12 +14,16 @@ import {
 import { Paging, PagingBuilder } from '@app/common/types/paging';
 import { RoleService } from 'src/role/role.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { LocalCacheService } from '@app/common/localCache';
 @Injectable()
 export class EmployeeService {
+  private cache: LocalCacheService;
   constructor(
     private readonly prismaService: PrismaService,
     private readonly roleService: RoleService,
-  ) {}
+  ) {
+    this.cache = LocalCacheService.getInstance();
+  }
 
   findByUsername(username: string) {
     return this.prismaService.users.findFirst({
@@ -123,10 +127,14 @@ export class EmployeeService {
     if (!foundUser || foundUser.status === 'deactive') {
       throw new BadRequestException(MessageResponse.USER_NOT_FOUND);
     }
-    return this.prismaService.users.update({
+    const userDelete = await this.prismaService.users.update({
       where: { id },
       data: { status: Status.deactive },
     });
+    if (userDelete) {
+      await this.cache.set(`BLACKLIST:${userDelete.id}`, '1', 1000 * 60 * 15);
+    }
+    return userDelete;
   }
 
   async updateEmployee(
