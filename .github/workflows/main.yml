@@ -20,16 +20,10 @@ jobs:
           script: |
             set -e
 
-            if [ ! -d "/ubuntu/docker" ]; then
-                echo "Thư mục /ubuntu/docker không tồn tại. Tạo mới..."
-                mkdir docker
-            fi
 
-            # Navigate to docker directory
-            cd docker
 
             # Check if the repo directory exists and is not empty
-            if [ -d "NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau" ] && [ "$(ls -A /ubuntu/docker/NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau)" ]; then
+            if [ -d "NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau" ]; then
                 echo "Repo đã tồn tại và có nội dung. Tiến hành xoá thư mục và clone lại..."
                 rm -rf NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau
             fi
