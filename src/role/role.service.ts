@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -6,11 +6,51 @@ import { MessageResponse } from '@app/common';
 import { Paging, PagingBuilder } from '@app/common/types/paging';
 import { Prisma, roles, Status } from '@prisma/client';
 import { FindManyRoleDto } from './dto/find-many.dto';
+import { hashSync } from 'bcrypt';
 
 @Injectable()
-export class RoleService {
+export class RoleService implements OnModuleInit {
   constructor(private readonly prismaService: PrismaService) {}
-
+  async onModuleInit() {
+    // await this.prismaService.roles.deleteMany();
+    // const [user, admin, _] = await Promise.all([
+    //   await this.prismaService.roles.create({
+    //     data: {
+    //       role: 'USER',
+    //     },
+    //   }),
+    //   await this.prismaService.roles.create({
+    //     data: {
+    //       role: 'ADMIN',
+    //     },
+    //   }),
+    //   await this.prismaService.users.deleteMany(),
+    // ]);
+    // await this.prismaService.users.create({
+    //   data: {
+    //     fullname: 'admin',
+    //     password: hashSync('P@ssw0rd!', 10),
+    //     username: 'admin',
+    //     role: {
+    //       connect: {
+    //         id: admin.id,
+    //       },
+    //     },
+    //   },
+    // });
+    // await this.prismaService.users.create({
+    //   data: {
+    //     fullname: 'employee',
+    //     password: hashSync('P@ssw0rd!', 10),
+    //     username: 'employee',
+    //     role: {
+    //       connect: {
+    //         id: user.id,
+    //       },
+    //     },
+    //   },
+    // });
+  }
   async create(createRoleDto: CreateRoleDto): Promise<roles> {
     // check unique
 

@@ -28,8 +28,8 @@ export class JsonWebTokenService {
     );
   }
 
-  signToken(payload: TokenPayloadCreateDto): string {
-    return this.jwtService.sign(payload, {
+  async signToken(payload: TokenPayloadCreateDto): Promise<string> {
+    return this.jwtService.signAsync(payload, {
       secret:
         payload.typeToken === TokenType.ACCESS_TOKEN
           ? this.accessTokenKey
@@ -64,12 +64,19 @@ export class JsonWebTokenService {
   }
 
   async signTokenFullPayload(payload: TokenPayload): Promise<string> {
-    return this.jwtService.signAsync(payload, {
-      secret:
-        payload.typeToken === TokenType.ACCESS_TOKEN
-          ? this.accessTokenKey
-          : this.refreshTokenKey,
-    });
+    return this.jwtService.signAsync(
+      { ...payload },
+      {
+        secret:
+          payload.typeToken === TokenType.ACCESS_TOKEN
+            ? this.accessTokenKey
+            : this.refreshTokenKey,
+        expiresIn:
+          payload.typeToken === TokenType.ACCESS_TOKEN
+            ? this.expiresAccessToken
+            : this.expiresRefreshToken,
+      },
+    );
   }
 
   decodeAccessToken(token: string): TokenPayload {

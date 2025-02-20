@@ -20,9 +20,11 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { TokenPayloadCreateDto } from 'src/jwt/payloadCreate.dto';
 import { ChangePasswordDto } from 'src/employee/dto/change-password.dto';
 import { decode } from 'punycode';
+import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly prismaService: PrismaService,
     private readonly jsonWebTokenService: JsonWebTokenService,
     private readonly employeeService: EmployeeService,
   ) {}
@@ -49,6 +51,14 @@ export class AuthService {
         foundUser.username,
         roles,
       );
+    await this.prismaService.users.update({
+      where: { id: foundUser.id },
+      data: {
+        refresh_token: tokens.refreshToken,
+      },
+    });
+    foundUser.refresh_token = tokens.refreshToken;
+
     return {
       info: mapperUserToUserResponse(foundUser),
       tokens,
@@ -73,13 +83,13 @@ export class AuthService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const decoded =
       await this.jsonWebTokenService.verifyRefreshToken(refreshToken);
-
     if (!decoded)
       throw new UnauthorizedException(MessageResponse.REFRESH_TOKEN_INVALID);
     const user = await this.employeeService.findOne(decoded.id);
     if (!user) {
       throw new BadRequestException(MessageResponse.USER_NOT_FOUND);
     }
+
     const newPayloadRefreshToken: TokenPayload = TokenFactory.createAccessToken(
       decoded.id,
       decoded.username,

@@ -32,6 +32,9 @@ export class EmployeeService {
 
   async create(data: CreateEmployeeDto) {
     const role = await this.roleService.findByName('USER');
+    if (!role) {
+      throw new BadRequestException(MessageResponse.ROLE_NOT_EXIST);
+    }
     return this.prismaService.users.create({
       data: {
         ...data,
