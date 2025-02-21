@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { MessageResponse } from '@app/common';
@@ -6,8 +6,83 @@ import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
-export class PermissionsService {
+export class PermissionsService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
+  async onModuleInit() {
+    await this.prisma.permissions.deleteMany();
+    await this.prisma.resources.deleteMany();
+    await this.prisma.users.deleteMany();
+    await this.prisma.roles.deleteMany();
+    const [admin, user] = await Promise.all([
+      this.prisma.roles.create({
+        data: {
+          role: 'ADMIN',
+        },
+      }),
+      this.prisma.roles.create({
+        data: {
+          role: 'USER',
+        },
+      }),
+    ]);
+    await Promise.all([
+      this.prisma.users.create({
+        data: {
+          fullname: 'ADMIN',
+          username: 'admin',
+          password: 'P@ssw0rd!',
+          role: {
+            connect: {
+              id: admin.id,
+            },
+          },
+        },
+      }),
+      this.prisma.users.create({
+        data: {
+          fullname: 'USER',
+          username: 'user',
+          password: 'P@ssw0rd!',
+          role: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+      }),
+    ]);
+    const [employeeMe, changePassword] = await Promise.all([
+      this.prisma.resources.create({
+        data: {
+          path: '/employees/me',
+        },
+      }),
+      this.prisma.resources.create({
+        data: {
+          path: '/auth/change-password',
+        },
+      }),
+    ]);
+    await this.prisma.permissions.createMany({
+      data: [
+        {
+          role_id: user.id,
+          resource_id: employeeMe.id,
+          permission: 'WRITE_ALL',
+        },
+        {
+          role_id: user.id,
+          resource_id: employeeMe.id,
+          permission: 'READ_ALL',
+        },
+        {
+          role_id: user.id,
+          resource_id: changePassword.id,
+          permission: 'WRITE_ALL',
+        },
+      ],
+    });
+  }
 
   async create(data: CreatePermissionDto) {
     // check role and permissions

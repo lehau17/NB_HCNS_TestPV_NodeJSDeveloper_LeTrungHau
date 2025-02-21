@@ -1,12 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateResourceDto } from './dto/create-resource.dto';
 import { UpdateResourceDto } from './dto/update-resource.dto';
 import { MessageResponse } from '@app/common';
 
 @Injectable()
-export class ResourcesService {
+export class ResourcesService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
+  onModuleInit() {}
 
   async create(data: CreateResourceDto) {
     // check path
