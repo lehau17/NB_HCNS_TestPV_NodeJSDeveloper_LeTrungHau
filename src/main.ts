@@ -10,6 +10,8 @@ import { ConfigService } from '@nestjs/config';
 import { RoleGuard } from '@app/common/guard/role.guard';
 import { GlobalRateLimiter } from '@app/common/guard/rateLimiter.global';
 import { BlackListGuard } from '@app/common/guard/blacklist.guard';
+import { CheckRoleGuard } from '@app/common/guard/checkRole.guard';
+import { PrismaService } from './prisma/prisma.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,6 +25,7 @@ async function bootstrap() {
       new Reflector(),
     ),
     new BlackListGuard(new Reflector()),
+    new CheckRoleGuard(new Reflector(), new PrismaService()),
     new RoleGuard(new Reflector()),
   );
 

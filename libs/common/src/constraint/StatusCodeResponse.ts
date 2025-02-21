@@ -30,6 +30,14 @@ export enum MessageResponse {
   // 4000
   ROLE_CREATE = 'Role create',
 
+  // 15000
+  RESOURCE_EXIST = 'Resource exists',
+  RESOURCE_NOT_EXIST = 'Resource not found',
+
+  // 16000
+  PERMISSION_EXIST = 'permission exists',
+  PERMISSION_NOT_EXIST = 'permission not found',
+
   ROLE_IS_EXIST = 'Role is already exists',
   ROLE_NOT_EXIST = 'Role not exists',
 
@@ -64,6 +72,13 @@ export const StatusCodeResponse: Record<string, number> = {
   [MessageResponse.OLD_PASSWORD_NOT_VALID]: 10008,
   // server error begin 50000
   [MessageResponse.SERVER_ERROR]: 50000,
+
+  // resource
+  [MessageResponse.RESOURCE_EXIST]: 15000,
+  [MessageResponse.RESOURCE_NOT_EXIST]: 15001,
+  // permission
+  [MessageResponse.PERMISSION_EXIST]: 16000,
+  [MessageResponse.PERMISSION_NOT_EXIST]: 16001,
 
   // role
   [MessageResponse.ROLE_GET_LIST]: 6000,

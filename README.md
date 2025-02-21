@@ -61,3 +61,6 @@ http://testbackend.haudev.io.vn/swagger
 -- không có quyền ![thông tin](moTaDuAn/forbidden_update_em.png)
 -- không tìm thấy user  ![thông tin](moTaDuAn/notfound_update_em.png)
 -- update thành công ![thông tin](moTaDuAn/success_update_em.png)
+
+## Danh sách role
+-- Thành công với quyền role : ![thông tin](moTaDuAn/get_role.png)
