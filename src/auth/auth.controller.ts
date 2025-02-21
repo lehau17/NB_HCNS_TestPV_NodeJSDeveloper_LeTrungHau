@@ -77,7 +77,7 @@ export class AuthController {
 
   @Patch('change-password')
   @MessageDeco(MessageResponse.CHANGE_PASSWORD_SUCCESS)
-  @Role(['USER', 'ADMIN'])
+  // @Role(['USER', 'ADMIN'])
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Change password for user' })
   changePassword(

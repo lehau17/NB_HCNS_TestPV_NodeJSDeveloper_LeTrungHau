@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -7,6 +15,7 @@ import {
 } from '@nestjs/swagger';
 import { PermissionsService } from './permissions.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
+import { UpdatePermissionDto } from './dto/update-permission.dto';
 
 @ApiTags('Permissions') // Gắn thẻ cho Swagger UI
 @Controller('permissions')
@@ -46,5 +55,17 @@ export class PermissionsController {
   @ApiResponse({ status: 404, description: 'Permission not found' })
   remove(@Param('id') id: string) {
     return this.permissionsService.remove(Number(id));
+  }
+
+  @Put(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update a permission by ID' })
+  @ApiResponse({ status: 200, description: 'Permission updated successfully' })
+  @ApiResponse({ status: 404, description: 'Permission not found' })
+  update(
+    @Param('id') id: string,
+    @Body() updatePermissionDto: UpdatePermissionDto,
+  ) {
+    return this.permissionsService.update(Number(id), updatePermissionDto);
   }
 }
