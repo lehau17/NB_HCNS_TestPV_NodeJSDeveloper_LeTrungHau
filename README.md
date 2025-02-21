@@ -4,11 +4,77 @@
 ```javascript     
 http://testbackend.haudev.io.vn/swagger
 ```
+- Url database postgres : postgresql://admin:admin1234@3.1.103.77:5432/quan_ly_nhan_su?schema=public
 - Backend : Nodejs(NestJS)
-- Database : PostgreSQL
+- Database : PostgreSQL 
 - Caching : localCache
 - Security : accessToken, refreshToken, RateLimiter, BlackList
 - Ops : Ec2, docker-compose, github actions
+# Môi trường phát triển 
+- local : window 11 acer, itel i5 10000
+- Môi trường production : ubuntu 24.04
+
+# hướng dẫn triển khai bằng command
+
+```javascript     
+git clone https://github.com/lehau17/NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau.git
+```
+```javascript     
+cd NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau
+```
+```javascript     
+yarn
+```
+```javascript     
+yarn start:dev
+```
+
+# hướng dẫn triển khai bằng docker
+
+```javascript     
+git clone https://github.com/lehau17/NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau.git
+```
+```javascript     
+cd NB_HCNS_TestPV_NodeJSDeveloper_LeTrungHau
+```
+```javascript     
+docker-compose up -d
+```
+```javascript     
+http://localhost:8080/swagger
+```
+
+
+# Design Pattern
+## Builder Pattern
+- ![Builder Pattern](moTaDuAn/builder_1.png)
+- ![Builder Pattern](moTaDuAn/builder_2.png)
+- ![Builder Pattern](moTaDuAn/builder_3.png)
+## Singleton Pattern
+- ![Singleton Pattern](moTaDuAn/signloten.png)
+
+
+## Factory Method Pattern (Đơn giản)
+- ![Factory Method Pattern](moTaDuAn/factory.png)
+
+# Docker
+## Dockerfile
+- ![Docker file](moTaDuAn/dockerfile.png)
+## Docker compose
+- ![Docker compose](moTaDuAn/dockercompose_1.png)
+- ![Docker compose](moTaDuAn/dockercompose_2.png)
+
+# Tính năng mở rộng
+## rate limit triển khai ở localcache mỗi 10 giây tối đa 10 request
+- ![rate limiter](moTaDuAn/ratelimit.png) 
+## Blacklist
+- Mô tả : khi mình deactive 1 user thì vẫn còn token, thì sẽ lưu token đó xuống localcache với thời gian như accessToken
+- ![blacklist](moTaDuAn/blacklist.png) 
+## Phân role theo mô hình RBAC 
+- ![phân role theo mô hinh](moTaDuAn/checkrole_1.png)
+- ![phân role theo mô hinh](moTaDuAn/checkrole_2.png)
+
+
 
 # Cấu trúc dự án
 ![Cấu trúc dư án](moTaDuAn/cauTrucDuAn.png)
@@ -17,6 +83,7 @@ http://testbackend.haudev.io.vn/swagger
 - data : volumn của docker
 - prisma : lưu file .prisma của ORM prisma
 - .github : chứa file cấu hình github action
+- Mô hình quản lý RBAC : ![database](moTaDuAn/db.png)
 
 # Mô tả API :
 ## Login : /auth/login
@@ -62,5 +129,20 @@ http://testbackend.haudev.io.vn/swagger
 -- không tìm thấy user  ![thông tin](moTaDuAn/notfound_update_em.png)
 -- update thành công ![thông tin](moTaDuAn/success_update_em.png)
 
-## Danh sách role
--- Thành công với quyền role : ![thông tin](moTaDuAn/get_role.png)
+## API ROLE (chỉ cho phép quyền ADMIN truy cập)
+--  lấy danh sách : ![thông tin](moTaDuAn/get_role.png)
+-- tạo role : ![thông tin](moTaDuAn/create_role.png)
+-- cập nhật role : ![thông tin](moTaDuAn/update_role.png)
+-- deactive role : ![thông tin](moTaDuAn/deactivate_role.png)
+
+## API resources (chỉ cho phép quyền ADMIN truy cập)
+--  lấy danh sách : ![thông tin](moTaDuAn/get_resource.png)
+-- tạo resource : ![thông tin](moTaDuAn/create_resource.png)
+-- cập nhật resource : ![thông tin](moTaDuAn/update_resource.png)
+-- deactive resource : ![thông tin](moTaDuAn/deactivate_resource.png)
+
+## API permission (chỉ cho phép quyền ADMIN truy cập)
+--  lấy danh sách : ![thông tin](moTaDuAn/get_permission.png)
+-- tạo permission : ![thông tin](moTaDuAn/create_permission.png)
+-- cập nhật permission : ![thông tin](moTaDuAn/update_permission.png)
+-- deactive permission : ![thông tin](moTaDuAn/deactivate_permission.png)

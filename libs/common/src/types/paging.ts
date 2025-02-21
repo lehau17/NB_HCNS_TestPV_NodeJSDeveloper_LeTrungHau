@@ -3,8 +3,6 @@ export class Paging<T> {
   total: number;
   page: number;
   limit: number;
-  //   nextCursor?: number;
-  //   previouCursors: number | null;
   nextPage: number | null;
   previousPage: number | null;
 
@@ -13,8 +11,6 @@ export class Paging<T> {
     this.total = builder.total;
     this.page = builder.page;
     this.limit = builder.limit;
-    // this.nextCursor = builder.nextCursor;
-    // this.previouCursors = builder.previousCursor;
     this.nextPage = builder.nextPage;
     this.previousPage = builder.previousPage;
   }
@@ -65,16 +61,6 @@ export class PagingBuilder<T> {
     this.limit = limit;
     return this;
   }
-
-  //   setNextCursor(next?: number): this {
-  //     this.nextCursor = next;
-  //     return this;
-  //   }
-
-  //   setPreviousCursor(previous?: number): this {
-  //     this.previousCursor = previous;
-  //     return this;
-  //   }
 
   build(): Paging<T> {
     return new Paging<T>(this);
