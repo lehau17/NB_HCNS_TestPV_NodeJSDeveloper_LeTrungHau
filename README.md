@@ -14,6 +14,8 @@ http://testbackend.haudev.io.vn/swagger
 - local : window 11 acer, itel i5 10000
 - Môi trường production : ubuntu 24.04
 
+
+
 # hướng dẫn triển khai bằng command
 
 ```javascript     
@@ -43,7 +45,8 @@ docker-compose up -d
 ```javascript     
 http://localhost:8080/swagger
 ```
-
+# Quản lý lỗi tập trung
+- ![error](moTaDuAn/error.png)
 
 # Design Pattern
 ## Builder Pattern
