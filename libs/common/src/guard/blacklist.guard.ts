@@ -29,7 +29,7 @@ export class BlackListGuard implements CanActivate {
     const key = this.genKey(id);
     const isExist = await this.cache.get(key);
     if (isExist) {
-      throw new ForbiddenException(MessageResponse.FORBIDDEN);
+      throw new ForbiddenException(MessageResponse.FORBIDDEN_DEACTIVE);
     }
     return true;
   }

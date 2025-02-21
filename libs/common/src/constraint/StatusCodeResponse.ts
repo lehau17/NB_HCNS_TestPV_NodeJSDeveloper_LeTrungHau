@@ -45,7 +45,7 @@ export enum MessageResponse {
 
   // 5000 forbidden
   FORBIDDEN = 'Forbidden: Chỉ có admin role mới có quyền truy cập',
-
+  FORBIDDEN_DEACTIVE = 'Tài khoản đã bị deactive',
   // code common
   SUCCESS = 'Success',
 
@@ -99,6 +99,7 @@ export const StatusCodeResponse: Record<string, number> = {
 
   // forbidden
   [MessageResponse.FORBIDDEN]: 5000,
+  [MessageResponse.FORBIDDEN_DEACTIVE]: 5001,
 
   // common
   [MessageResponse.SUCCESS]: 9000,
